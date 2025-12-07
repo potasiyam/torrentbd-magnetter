@@ -1,6 +1,10 @@
 /**
  * TorrentBD Magnetter Core Logic
  */
+// Browser API polyfill for Chrome compatibility
+if (typeof browser === "undefined") {
+  var browser = chrome;
+}
 
 // ==========================================
 // TorrentBD Logic

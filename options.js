@@ -1,3 +1,8 @@
+// Browser API polyfill for Chrome compatibility
+if (typeof browser === "undefined") {
+  var browser = chrome;
+}
+
 function saveOptions(e) {
     e.preventDefault();
     var trackers = [];
