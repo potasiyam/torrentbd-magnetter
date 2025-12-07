@@ -1,6 +1,6 @@
 {
   "name": "torrentbd-magnetter",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Browser extension to add magnet links for TorrentBD",
   "scripts": {
     "build": "node build.js",

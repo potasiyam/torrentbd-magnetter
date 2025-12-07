@@ -35,13 +35,22 @@ function resetOptions(e) {
 function addField(e) {
     e.preventDefault();
     var field_parent = document.getElementById('tracker_fields');
-    var s = '<input type="text" value="" class="field_input" /><button class="remove_tracker danger">x</button>'; // HTML string
 
     var div = document.createElement('div');
-    div.innerHTML = s;
-    div.className += " panel-formElements-item";
-    div.getElementsByTagName("button")[0].addEventListener("click", removeField);
-
+    div.className = "panel-formElements-item";
+    
+    var input = document.createElement('input');
+    input.type = "text";
+    input.value = "";
+    input.className = "field_input";
+    
+    var btn = document.createElement('button');
+    btn.className = "remove_tracker danger";
+    btn.textContent = "x";
+    btn.addEventListener("click", removeField);
+    
+    div.appendChild(input);
+    div.appendChild(btn);
     field_parent.appendChild(div);
 }
 
@@ -58,12 +67,21 @@ function restoreOptions() {
         if (typeof result.trackers !== "undefined" && result.trackers.length > 0) {
             field_parent.innerHTML = '';
             result.trackers.forEach(function (element) {
-                var s = '<input type="text" value="' + element + '" class="field_input" /><button class="remove_tracker danger">x</button>'; // HTML string
-
                 var div = document.createElement('div');
-                div.innerHTML = s;
-                div.className += " panel-formElements-item";
-                div.getElementsByTagName("button")[0].addEventListener("click", removeField);
+                div.className = "panel-formElements-item";
+                
+                var input = document.createElement('input');
+                input.type = "text";
+                input.value = element;
+                input.className = "field_input";
+                
+                var btn = document.createElement('button');
+                btn.className = "remove_tracker danger";
+                btn.textContent = "x";
+                btn.addEventListener("click", removeField);
+                
+                div.appendChild(input);
+                div.appendChild(btn);
                 field_parent.appendChild(div);
             });
         }

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "TorrentBD Magnetter",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Adds magnets for TorrentBD.",
   "icons": {
     "32": "icons/magnet.png",
