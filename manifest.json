@@ -1,10 +1,10 @@
 {
 
   "manifest_version": 2,
-  "name": "CrazyHD Magnetter",
-  "version": "1.0.1",
+  "name": "TorrentBD Magnetter",
+  "version": "1.0.2",
 
-  "description": "Adds magnets for CrazyHD.",
+  "description": "Adds magnets for TorrentBD.",
 
   "icons": {
     "32": "icons/icon-32.png",
@@ -14,14 +14,17 @@
 
   "content_scripts": [
     {
-      "matches": ["*://*.crazyhd.com/*"],
-      "js": ["core.js"]
+      "matches": [
+        "*://*.torrentbd.com/*",
+        "*://*.torrentbd.net/*",
+        "*://*.torrentbd.org/*"
+      ],
+      "js": ["torrent-converter.js", "core.js"]
     }
   ],
 
   "browser_action": {
     "browser_style": true,
-    // "default_popup": "popup/choose_page.html",
     "default_popup": "options.html",
     "default_icon": {
       "32": "icons/icon-32.png",

@@ -1,47 +1,105 @@
-const regex = /id=(\w+)&.*f=(\w+.+).torrent/g;
+/**
+ * TorrentBD Magnetter Core Logic
+ */
 
-function onError(error) {
-    console.log(`Error: ${error}`);
-}
+// ==========================================
+// TorrentBD Logic
+// ==========================================
+async function runTorrentBD() {
 
-function onGot(item) {
-    let trs = '';
-    if (typeof item.trackers === 'object') {
-        item.trackers.forEach(element => {
-            trs = trs + "&tr=" + encodeURI(element);
-        });
+    // Helper to get user trackers
+    async function getTrackers() {
+        try {
+            const data = await browser.storage.local.get("trackers");
+            return data.trackers || [];
+        } catch (e) {
+            return [];
+        }
     }
-    console.log(trs);
-    var str = document.querySelector(".wrapper a.btn-download").getAttribute("href");
 
-    while ((m = regex.exec(str)) !== null) {
-        // This is necessary to avoid infinite loops with zero-width matches
-        if (m.index === regex.lastIndex) {
-            regex.lastIndex++;
+    const dlBtn = document.querySelector('#dl-btn') || document.querySelector('a.btn.waves-effect.inline.tgaction');
+    if (!dlBtn) {
+        console.log("TorrentBD Magnetter: No download button found");
+        return;
+    }
+
+    // Check if already injected
+    if (dlBtn.closest('.torrtopbtn-wrapper') && dlBtn.closest('.torrtopbtn-wrapper').parentNode.querySelector('.magnet-btn')) return;
+    if (dlBtn.parentNode.querySelector('.magnet-btn')) return;
+
+    // Create the button (Initial state)
+    const magnetBtn = document.createElement('a');
+    magnetBtn.className = 'btn waves-effect inline tgaction magnet-btn';
+    magnetBtn.innerHTML = '<i class="material-icons left">link</i> Magnet';
+    magnetBtn.href = '#';
+
+    // Create wrapper to match site structure
+    const wrapper = document.createElement('div');
+    wrapper.className = 'torrtopbtn-wrapper';
+    wrapper.appendChild(magnetBtn);
+    
+    // Insert after the download button's wrapper
+    const dlWrapper = dlBtn.closest('.torrtopbtn-wrapper') || dlBtn.parentNode;
+    dlWrapper.parentNode.insertBefore(wrapper, dlWrapper.nextSibling);
+
+    let isProcessing = false;
+
+    magnetBtn.addEventListener('click', async (e) => {
+        // If we already have a magnet link (href is set to magnet:...), let it proceed naturally
+        if (magnetBtn.href.startsWith('magnet:')) {
+            return;
         }
 
-        if (document.querySelectorAll(".btn-chumbok").length > 0) {
-            var buttons = document.querySelectorAll(".btn-chumbok");
-            for (i = 0; i < buttons.length; ++i) {
-                buttons[i].remove();
+        e.preventDefault();
+        if (isProcessing) {
+            return;
+        }
+
+        isProcessing = true;
+        // const originalContent = magnetBtn.innerHTML;
+        magnetBtn.innerHTML = '<i class="material-icons left">hourglass_empty</i> Loading...';
+        magnetBtn.style.cursor = 'wait';
+
+        try {
+            const response = await fetch(dlBtn.href);
+            if (!response.ok) throw new Error("Network response was not ok: " + response.statusText);
+            
+            const arrayBuffer = await response.arrayBuffer();
+            
+            if (!window.TorrentConverter) {
+                throw new Error("TorrentConverter library not loaded");
             }
-        }
-        var aTag = document.createElement('A');
-        aTag.className = ("btn btn-lg btn-danger btn-chumbok");
-        var mag_string = "magnet:?xt=urn:btih:" + m[1] + "&dn=" + encodeURI(m[2]) + trs;
-        aTag.setAttribute('href', mag_string);
-        aTag.innerHTML = "<i class=\"fa fa-magnet\"></i> Magnet";
 
-        document.querySelector(".wrapper a.btn-download").parentNode.appendChild(aTag);
-    }
+            // Get User Trackers FIRST
+            const userTrackers = await getTrackers();
+            
+            // Pass them to the converter (it will use them INSTEAD of internal ones if present)
+            let magnetLink = await window.TorrentConverter.toMagnet(arrayBuffer, userTrackers);
+            
+            if (magnetLink) {
+                
+                // Update button to be a valid link now
+                magnetBtn.href = magnetLink;
+                magnetBtn.innerHTML = '<i class="material-icons left">link</i> Magnet';
+                magnetBtn.style.cursor = 'pointer';
+                
+                // Trigger navigation
+                window.location.href = magnetLink;
+                
+            } else {
+                throw new Error("Magnet conversion failed");
+            }
+        } catch (e) {
+            console.error("TorrentBD Magnetter Error:", e);
+            magnetBtn.innerHTML = '<i class="material-icons left">error</i> Error';
+            magnetBtn.style.backgroundColor = '#555'; // Dark grey for error
+            magnetBtn.title = e.message;
+        } finally {
+            isProcessing = false;
+        }
+    });
+
 }
 
-var getting = browser.storage.local.get("trackers");
-
-getting.then(function (data) {
-    onGot(data);
-}, function (error) {
-    console.log('error', error);
-    onGot({});
-});
-// getting.then(onGot, onError);
+// Start
+runTorrentBD();
