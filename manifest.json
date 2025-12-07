@@ -1,17 +1,13 @@
 {
-
   "manifest_version": 2,
   "name": "TorrentBD Magnetter",
-  "version": "1.0.2",
-
+  "version": "2.0.0",
   "description": "Adds magnets for TorrentBD.",
-
   "icons": {
     "32": "icons/icon-32.png",
     "48": "icons/icon-48.png",
     "96": "icons/icon-96.png"
   },
-
   "content_scripts": [
     {
       "matches": [
@@ -19,10 +15,12 @@
         "*://*.torrentbd.net/*",
         "*://*.torrentbd.org/*"
       ],
-      "js": ["torrent-converter.js", "core.js"]
+      "js": [
+        "torrent-converter.js",
+        "core.js"
+      ]
     }
   ],
-
   "browser_action": {
     "browser_style": true,
     "default_popup": "options.html",
@@ -31,17 +29,15 @@
       "48": "icons/icon-48.png"
     }
   },
-
   "applications": {
     "gecko": {
       "id": "potasyam@mozilla.org"
     }
   },
-
   "options_ui": {
     "page": "options.html"
   },
-
-  "permissions": ["storage"]
-
+  "permissions": [
+    "storage"
+  ]
 }
