@@ -1,0 +1,28 @@
+{
+  "name": "torrentbd-magnetter",
+  "version": "1.0.2",
+  "description": "Browser extension to add magnet links for TorrentBD",
+  "scripts": {
+    "build": "node build.js",
+    "build:firefox": "node build.js firefox",
+    "build:chrome": "node build.js chrome",
+    "version:patch": "node build.js bump patch",
+    "version:minor": "node build.js bump minor",
+    "version:major": "node build.js bump major"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:potasiyam/torrentbd-magnetter.git"
+  },
+  "keywords": [
+    "browser-extension",
+    "torrent",
+    "magnet",
+    "torrentbd"
+  ],
+  "author": "potasiyam",
+  "license": "MIT",
+  "devDependencies": {
+    "archiver": "^7.0.1"
+  }
+}

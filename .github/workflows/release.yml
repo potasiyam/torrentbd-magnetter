@@ -1,0 +1,59 @@
+name: Release Extension
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build extensions
+        run: npm run build
+
+      - name: Get version
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/*.zip
+          body: |
+            ## TorrentBD Magnetter v${{ steps.get_version.outputs.VERSION }}
+
+            ### Downloads
+            - 🦊 **Firefox**: `torrentbd-magnetter-firefox-${{ steps.get_version.outputs.VERSION }}.zip`
+            - 🌐 **Chrome**: `torrentbd-magnetter-chrome-${{ steps.get_version.outputs.VERSION }}.zip`
+
+            ### Installation
+            **Firefox:**
+            1. Download the Firefox zip file
+            2. Go to `about:addons`
+            3. Click the gear icon → Install Add-on From File
+            4. Select the downloaded zip
+
+            **Chrome:**
+            1. Download the Chrome zip file  
+            2. Extract the zip
+            3. Go to `chrome://extensions`
+            4. Enable "Developer mode"
+            5. Click "Load unpacked" and select the extracted folder
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
